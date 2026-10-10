@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -29,11 +30,35 @@ namespace MonkeyWrench
         public enum Toggle { On = 1, Off = 0 }
         private static ConfigEntry<Toggle> _serverConfigLocked = null!;
 
+        private static ConfigEntry<KeyboardShortcut> _switchKey = null!;
+        private static ConfigEntry<string> _blacklist = null!;
+        private static ConfigEntry<float> _staminaModifier = null!;
+        private static ConfigEntry<float> _damageModifier = null!;
+
+        public static KeyboardShortcut SwitchKey => _switchKey.Value;
+        public static List<string> Blacklist => new StringListConfig(_blacklist.Value).list;
+        public static float StaminaModifier => 1 + _staminaModifier.Value;
+        public static float DamageModifier => _damageModifier.Value;
+
 
         public void Awake()
         {
             _serverConfigLocked = config("1 - General", "Lock Configuration", Toggle.On, "If on, the configuration is locked and can be changed by server admins only.");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
+
+
+            _switchKey = config("2 - Settings", "Switch Key", new KeyboardShortcut(KeyCode.Y),
+                new ConfigDescription("Set key to switch between one-handed and two-handed", null, new AcceptableShortcuts()));
+            _blacklist = config("2 - Settings", "Blacklist", "",
+                new ConfigDescription("List of items that cannot be monkey wrenched", null,
+                    StringListConfig.attributes));
+
+            _staminaModifier = config("2 - Settings", "Stamina Use Increase", 0f,
+                new ConfigDescription("Set attack stamina use multiplier while monkey wrenched", null,
+                    new AcceptableValueRange<float>(0f, 1f)));
+            _damageModifier = config("2 - Settings", "Damage Reduction", 0f,
+                new ConfigDescription("Set damage reduction while monkey wrenched", null, new AcceptableValueRange<float>(0f, 1f)));
+            
             Assembly assembly = Assembly.GetExecutingAssembly();
             _harmony.PatchAll(assembly);
             SetupWatcher();
@@ -87,7 +112,7 @@ namespace MonkeyWrench
             return config(group, name, value, new ConfigDescription(description), synchronizedSetting);
         }
 
-        private class ConfigurationManagerAttributes
+        public class ConfigurationManagerAttributes
         {
             [UsedImplicitly] public int? Order = null!;
             [UsedImplicitly] public bool? Browsable = null!;
