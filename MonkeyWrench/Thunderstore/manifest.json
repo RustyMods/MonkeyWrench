@@ -1,9 +1,9 @@
 {
   "name": "MonkeyWrench",
-  "version_number": "1.0.1",
+  "version_number": "1.0.2",
   "website_url": "https://github.com/RustyMods/MonkeyWrench",
   "description": "Allows to wield two-handed weapons as one-handed",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2202"
+    "denikson-BepInExPack_Valheim-5.4.2351"
   ]
 }
