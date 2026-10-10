@@ -7,7 +7,7 @@ namespace MonkeyWrench;
 
 public class StringListConfig
 {
-    public static MonkeyWrenchPlugin.ConfigurationManagerAttributes attributes = new()
+    public static readonly ConfigurationManagerAttributes attributes = new()
     {
         CustomDrawer = Draw
     };
